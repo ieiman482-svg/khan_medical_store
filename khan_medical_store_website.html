@@ -1,0 +1,108 @@
+<!-- NO-BILLING SYSTEM with IMAGES & CATEGORIES -->
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khan Medical Store – Online Pharmacy</title>
+<style>
+body{margin:0;font-family:Arial;background:#f6f8fb}
+header{background:#1976d2;color:#fff;padding:15px;font-size:24px;text-align:center}
+.filter{padding:10px;text-align:center}
+select{padding:8px;border-radius:6px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;padding:20px}
+.card{background:#fff;padding:15px;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.1);text-align:center}
+.card img{width:100%;height:140px;object-fit:contain;margin-bottom:10px}
+button{background:#1976d2;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+.cart{position:fixed;bottom:20px;right:20px;background:#25d366;color:#fff;padding:15px;border-radius:50px;text-decoration:none}
+</style>
+</head>
+<body>
+<header>Khan Medical Store</header>
+
+<div class="filter">
+  <select id="catFilter" onchange="render()">
+    <option value="all">All Categories</option>
+    <option value="Pain Relief">Pain Relief</option>
+    <option value="Vitamins">Vitamins</option>
+    <option value="Baby Care">Baby Care</option>
+  </select>
+</div>
+
+<div class="products" id="products"></div>
+<a class="cart" onclick="checkout()">Order on WhatsApp</a>
+
+<script>
+let cart=[];
+let products=JSON.parse(localStorage.getItem('products'))||[
+ {name:'Paracetamol',price:50,cat:'Pain Relief',img:'https://via.placeholder.com/200?text=Paracetamol'},
+ {name:'Vitamin C',price:300,cat:'Vitamins',img:'https://via.placeholder.com/200?text=Vitamin+C'},
+ {name:'Baby Syrup',price:250,cat:'Baby Care',img:'https://via.placeholder.com/200?text=Baby+Care'}
+];
+
+function render(){
+ const box=document.getElementById('products');
+ const f=document.getElementById('catFilter').value;
+ box.innerHTML='';
+ products.filter(p=>f==='all'||p.cat===f).forEach(p=>{
+ box.innerHTML+=`<div class='card'>
+ <img src='${p.img}'>
+ <h3>${p.name}</h3>
+ <p>${p.cat}</p>
+ <p>Rs ${p.price}</p>
+ <button onclick='add("${p.name}",${p.price})'>Add</button>
+ </div>`;
+ });
+}
+render();
+
+function add(n,p){cart.push({n,p});alert('Added');}
+function checkout(){
+ let msg='Order Details:%0A';let total=0;
+ cart.forEach(i=>{msg+=`${i.n} - Rs ${i.p}%0A`;total+=i.p});
+ msg+=`Total: Rs ${total}`;
+ window.open('https://wa.me/923144540421?text='+msg);
+}
+</script>
+</body>
+</html>
+
+<!-- admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Khan Medical</title>
+<style>
+body{font-family:Arial;background:#eef2f3;padding:20px}
+.panel{max-width:420px;margin:auto;background:#fff;padding:20px;border-radius:10px}
+input,select,button{width:100%;padding:10px;margin:8px 0}
+button{background:#1976d2;color:#fff;border:none}
+</style>
+</head>
+<body>
+<div class="panel">
+<h2>Add Product</h2>
+<input id="name" placeholder="Medicine Name">
+<input id="price" placeholder="Price">
+<select id="cat">
+ <option>Pain Relief</option>
+ <option>Vitamins</option>
+ <option>Baby Care</option>
+</select>
+<input id="img" placeholder="Image URL">
+<button onclick="save()">Save</button>
+<p id="msg"></p>
+</div>
+<script>
+function save(){
+ let data=JSON.parse(localStorage.getItem('products'))||[];
+ data.push({name:name.value,price:price.value,cat:cat.value,img:img.value||'https://via.placeholder.com/200'});
+ localStorage.setItem('products',JSON.stringify(data));
+ msg.innerText='Product saved';
+}
+</script>
+</body>
+</html>
